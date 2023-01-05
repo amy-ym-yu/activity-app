@@ -1,34 +1,84 @@
 import './App.css';
 import React, {useState} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Form, FormGroup, InputGroup } from 'react-bootstrap';
+import { Alert, Form, FormGroup } from 'react-bootstrap';
 
 function App() {
-  const [access, setAccess] = useState([]);
+  const typeParam = "type=";
+  const options = [
+    {value: '', text:'Select a category'},
+    {value: 'education', text:'education'},
+    {value: 'recreational', text:'recreational'},
+    {value: 'social', text:'social'},
+    {value: 'diy', text:'diy'},
+    {value: 'charity', text:'charity'},
+    {value: 'cooking', text:'cooking'},
+    {value: 'relaxation', text:'relaxation'},
+    {value: 'music', text:'music'},
+    {value: 'busywork', text:'busywork'}
+  ]
+  const [selected, setSelected] = useState(options[0].value); // selected in dropdown
   const [type, setType] = useState([]);
+
+  const friendsParam = "participants=";
   const [friends, setFriends] = useState([]);
+  
+  const costParam = "price=";
   const [cost, setCost] = useState([]);
 
+  const basicCall = "http://www.boredapi.com/api/activity";
+  const [data, setData] = useState([]); // data recieved from call
+
+  const handleCall = () => {
+    console.log(basicCall);
+    fetch(basicCall)
+      .then((response) => response.json())
+      .then((incoming) => {
+        console.log(incoming)
+        setData(incoming);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      })
+
+    setResults("Random Activity");
+    setActivity(data);
+  };
+
+  const handleSearch = () => {
+    fetch(basicCall + "?" + type + "&" + friends + "&" + cost)
+      .then((response) => response.json())
+      .then((incoming) => {
+        console.log(incoming)
+        setData(incoming);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      })
+
+      setResults("Searched Activity");
+      setActivity(data);
+  };
+
+  const [searchResults, setResults] = useState([]);
+  const [activity, setActivity] = useState([]);
+
   return (
+    <>
+    <h1 className='display-3 text-center'>Bored Out of Your Mind</h1>
     <Form className='p-3'>
       <FormGroup className='type p-1'>
         <Form.Label>What type of activity would you like to do?</Form.Label>
         <br></br>
-        <select class="select-type">
-          <option selected>Select a category</option>
-          <option value="1">educational</option>
-          <option value="2">recreational</option>
-          <option value="3">social</option>
-          <option value="4">diy</option>
-          <option value="5">charity</option>
-          <option value="6">cooking</option>
-          <option value="7">relaxing</option>
-          <option value="8">musical</option>
-          <option value="9">busywork</option>
+        <select value={selected} onChange={(e) => { setType(typeParam + e.target.value); 
+          console.log(typeParam + e.target.value); setSelected(e.target.value);}}>
+
+          {options.map(options =>( 
+            <option key={options.value} value={options.value}>{options.text}</option>))}
         </select>
       </FormGroup>
       
-      <FormGroup className='access p-1'>
+      <FormGroup className='friends p-1'>
         <Form.Label>How many friends do you have?</Form.Label>
         <br></br>
         <div className="d-flex justify-content-between">
@@ -38,23 +88,34 @@ function App() {
           <p className="px-2">4</p>
           <p className="px-2">5</p>
         </div>
-        <Form.Range min="1" max="5" step="1"></Form.Range>
+        <Form.Range min="1" max="5" step="1" onChange={(e) => {setFriends( friendsParam + e.target.value); 
+          console.log(friendsParam + e.target.value)}}></Form.Range>
       </FormGroup>
 
-      <FormGroup className='access p-1'>
+      <FormGroup className='cost p-1'>
         <Form.Label>How many dabloons do you have?</Form.Label>
         <br></br>
         <div className="d-flex justify-content-between">
           <p className="px-2">A little</p>
           <p className="px-2">A lot</p>
         </div>
-        <Form.Range min="0" max="1" step="0.1"></Form.Range>
+        <Form.Range min="0" max="1" step="0.1"  onChange={(e) => {setCost(costParam + e.target.value); 
+          console.log(costParam + e.target.value)}}></Form.Range>
       </FormGroup>
 
-    <button type="button" className="btn btn-success m-2">Search</button>
-    <button type="button" className="btn btn-primary m-2">I'm feeling bored</button>
+    <button type="button" className="btn btn-success m-2" onClick={handleSearch}>Search</button>
+    <button type="button" className="btn btn-primary m-2" onClick={handleCall}>I'm feeling bored</button>
 
     </Form>
+
+    <div className='p-3'>
+      <h2>{searchResults}</h2>
+      <>
+        
+      </>
+    </div>
+    
+    </>
   );
 }
 
