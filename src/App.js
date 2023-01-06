@@ -27,7 +27,7 @@ function App() {
   const [cost, setCost] = useState([]);
 
   const basicCall = "http://www.boredapi.com/api/activity";
-  const [data, setData] = useState([]); // data recieved from call
+  const [data, setData] = useState({"activity": "No search has occurred."}); // data recieved from call
 
   const handleCall = () => {
     console.log(basicCall);
@@ -110,11 +110,13 @@ function App() {
 
     <div className='p-3'>
       <h2>{searchResults}</h2>
-      <>
-        
-      </>
+      <h5>{data.activity || "No activity found. Please remove some search parameters, and try again."}</h5>
+      <div className='activity-info'>
+        <p>Type: {data.type}</p>
+        <p>Friends: {data.participants}</p>
+        <p>Cost: {data.price}</p>
+      </div>
     </div>
-    
     </>
   );
 }
