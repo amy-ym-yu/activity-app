@@ -30,6 +30,11 @@ function App() {
   const [data, setData] = useState({"activity": "No search has occurred."}); // data recieved from call
 
   const handleCall = () => {
+    if (data.activity != "No search has occurred.") {
+      setPrev([data, ...previousSearches]);
+      console.log(previousSearches);
+    }
+
     console.log(basicCall);
     fetch(basicCall)
       .then((response) => response.json())
@@ -40,7 +45,7 @@ function App() {
       .catch((err) => {
         console.log(err.message);
       })
-
+  
     setResults("Random Activity");
     setActivity(data);
   };
@@ -63,60 +68,78 @@ function App() {
   const [searchResults, setResults] = useState([]);
   const [activity, setActivity] = useState([]);
 
+  const [previousSearches, setPrev] = useState([]);
+
   return (
     <>
     <h1 className='display-3 text-center'>Bored Out of Your Mind</h1>
-    <Form className='p-3'>
-      <FormGroup className='type p-1'>
-        <Form.Label>What type of activity would you like to do?</Form.Label>
-        <br></br>
-        <select value={selected} onChange={(e) => { setType(typeParam + e.target.value); 
-          console.log(typeParam + e.target.value); setSelected(e.target.value);}}>
+    <div className='main-container d-flex flex-row justify-content-lg-around'>
+      <Form className='form-container p-1'>
+        <FormGroup className='type p-1'>
+          <Form.Label>What type of activity would you like to do?</Form.Label>
+          <br></br>
+          <select value={selected} onChange={(e) => { setType(typeParam + e.target.value); 
+            console.log(typeParam + e.target.value); setSelected(e.target.value);}}>
 
-          {options.map(options =>( 
-            <option key={options.value} value={options.value}>{options.text}</option>))}
-        </select>
-      </FormGroup>
+            {options.map(options =>( 
+              <option key={options.value} value={options.value}>{options.text}</option>))}
+          </select>
+        </FormGroup>
+        
+        <FormGroup className='friends p-1'>
+          <Form.Label>How many friends do you have?</Form.Label>
+          <br></br>
+          <div className="d-flex justify-content-between">
+            <p className="px-2">1</p>
+            <p className="px-2">2</p>
+            <p className="px-2">3</p>
+            <p className="px-2">4</p>
+            <p className="px-2">5</p>
+          </div>
+          <Form.Range min="1" max="5" step="1" onChange={(e) => {setFriends( friendsParam + e.target.value); 
+            console.log(friendsParam + e.target.value)}}></Form.Range>
+        </FormGroup>
+
+        <FormGroup className='cost p-1'>
+          <Form.Label>How many dabloons do you have?</Form.Label>
+          <br></br>
+          <div className="d-flex justify-content-between">
+            <p className="px-2">A little</p>
+            <p className="px-2">A lot</p>
+          </div>
+          <Form.Range min="0" max="1" step="0.1"  onChange={(e) => {setCost(costParam + e.target.value); 
+            console.log(costParam + e.target.value)}}></Form.Range>
+        </FormGroup>
+
+      <button type="button" className="btn btn-success m-2" onClick={handleSearch}>Search</button>
+      <button type="button" className="btn btn-primary m-2" onClick={handleCall}>I'm feeling bored</button>
+
+      </Form>
       
-      <FormGroup className='friends p-1'>
-        <Form.Label>How many friends do you have?</Form.Label>
-        <br></br>
-        <div className="d-flex justify-content-between">
-          <p className="px-2">1</p>
-          <p className="px-2">2</p>
-          <p className="px-2">3</p>
-          <p className="px-2">4</p>
-          <p className="px-2">5</p>
+        <div className='result-container d-flex flex-column'>
+          <div className='p-1 w-30 flex-column flex-wrap'>
+            <h2>{searchResults}</h2>
+            <h5>{data.activity || "No activity found. Please remove some search parameters, and try again."}</h5>
+            <div className='activity-info'>
+              <p>Type: {data.type}</p>
+              <p>Friends: {data.participants}</p>
+              <p>Cost: {data.price}</p>
+            </div>
+          </div>
+
+          <div className='list-container d-flex flex-column'>
+            <h3>Previous Searches</h3>
+            {(previousSearches).map((search, index) => {
+              return <div key={index}>
+                <h5>{search.activity}</h5>
+                <p>Type: {search.type}</p>
+                <p>Friends: {search.participants}</p>
+                <p>Cost: {search.price}</p>
+              </div>}
+            )}
+          </div>
         </div>
-        <Form.Range min="1" max="5" step="1" onChange={(e) => {setFriends( friendsParam + e.target.value); 
-          console.log(friendsParam + e.target.value)}}></Form.Range>
-      </FormGroup>
-
-      <FormGroup className='cost p-1'>
-        <Form.Label>How many dabloons do you have?</Form.Label>
-        <br></br>
-        <div className="d-flex justify-content-between">
-          <p className="px-2">A little</p>
-          <p className="px-2">A lot</p>
-        </div>
-        <Form.Range min="0" max="1" step="0.1"  onChange={(e) => {setCost(costParam + e.target.value); 
-          console.log(costParam + e.target.value)}}></Form.Range>
-      </FormGroup>
-
-    <button type="button" className="btn btn-success m-2" onClick={handleSearch}>Search</button>
-    <button type="button" className="btn btn-primary m-2" onClick={handleCall}>I'm feeling bored</button>
-
-    </Form>
-
-    <div className='p-3'>
-      <h2>{searchResults}</h2>
-      <h5>{data.activity || "No activity found. Please remove some search parameters, and try again."}</h5>
-      <div className='activity-info'>
-        <p>Type: {data.type}</p>
-        <p>Friends: {data.participants}</p>
-        <p>Cost: {data.price}</p>
       </div>
-    </div>
     </>
   );
 }

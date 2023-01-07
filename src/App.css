@@ -5,3 +5,11 @@
 .activity-info{
   margin-bottom: 0%;
 }
+
+.form-container {
+  flex: 0 0 60%;
+}
+
+.result-container {
+  flex: 0 0 30%;
+}
