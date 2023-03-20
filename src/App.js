@@ -1,7 +1,8 @@
 import './App.css';
 import React, {useState} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Alert, Form, FormGroup } from 'react-bootstrap';
+import { Alert, Form, FormGroup } from 'react-bootstrap'; 
+
 
 function App() {
   const typeParam = "type=";
@@ -51,6 +52,11 @@ function App() {
   };
 
   const handleSearch = () => {
+    if (data.activity != "No search has occurred.") {
+      setPrev([data, ...previousSearches]);
+      console.log(previousSearches);
+    }
+
     fetch(basicCall + "?" + type + "&" + friends + "&" + cost)
       .then((response) => response.json())
       .then((incoming) => {
@@ -113,9 +119,10 @@ function App() {
 
       <button type="button" className="btn btn-success m-2" onClick={handleSearch}>Search</button>
       <button type="button" className="btn btn-primary m-2" onClick={handleCall}>I'm feeling bored</button>
-
       </Form>
-      
+
+      <div className="vr"></div>
+
         <div className='result-container d-flex flex-column'>
           <div className='p-1 w-30 flex-column flex-wrap'>
             <h2>{searchResults}</h2>
@@ -126,6 +133,8 @@ function App() {
               <p>Cost: {data.price}</p>
             </div>
           </div>
+
+          <hr></hr>
 
           <div className='list-container d-flex flex-column'>
             <h3>Previous Searches</h3>
